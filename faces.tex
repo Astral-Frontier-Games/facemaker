@@ -1,0 +1,281 @@
+% !TEX engine = xelatex
+\documentclass[10pt,oneside,letterpaper,landscape]{memoir}
+
+% set your margins here; left margin, right margin, bottom margin, top margin, binding offset, etc
+\usepackage[lmargin=13mm,rmargin=13mm,bmargin=11mm,tmargin=13mm,bindingoffset=0mm,heightrounded]{geometry}
+
+% these are used for placing text outside the natural flow of text, in blocks and boxes (and even rotated)
+\usepackage[absolute]{textpos}
+\setlength{\TPHorizModule}{10mm}
+\setlength{\TPVertModule}{10mm}
+\usepackage{rotating}
+
+% render lists in more compact form
+\usepackage{enumitem}
+\setlist[enumerate]{noitemsep, topsep=-2pt}
+\setlist[itemize]{noitemsep, topsep=-2pt}
+
+% this allows you to use images
+\usepackage{graphicx}
+\graphicspath{ {images/} }
+
+% font stuff
+\usepackage{fontspec,xltxtra,xunicode}
+\defaultfontfeatures{Mapping=tex-text}
+
+% main font, used for the full document; use the family name here. If scale = 1 it is 10pt; you may want to go to .9 or even .8
+\setmainfont[Scale=1,Path=./fonts/,BoldFont={AlegreyaSans-Bold},ItalicFont={AlegreyaSans-Italic}]{AlegreyaSans-Regular}
+
+% each of these is a font we'll use later; you can add more and scale them using the same method
+% you may want more or less of these; at minimum, you want a title font and a section header font
+% you'll need to mess with scale on these to get them looking 'nice' for your fonts
+\newfontfamily\titlefont[Scale=2.5,Path=./fonts/,BoldFont={Montserrat-Bold},ItalicFont={Montserrat-Italic}]{Montserrat-Regular}
+\newfontfamily\sectionfont[Scale=1,Path=./fonts/,BoldFont={Montserrat-Bold},ItalicFont={Montserrat-Italic}]{Montserrat-Regular}
+
+% this is for the purposes of Lettrine
+\newfontfamily\numeralfont[Scale=1,Path=./fonts/,BoldFont={Montserrat-Bold},ItalicFont={Montserrat-Italic}]{Montserrat-Regular}
+
+% new commands; these allow us to set up references to our fonts and format them in advance
+\newcommand*\toptitle[1]{{\color{titlecolor}\titlefont{#1}}}
+\newcommand*\tagline[1]{{\color{taglinecolor}\taglinefont{#1}}}
+
+% this is a seperator, like a dagger or bullet, for inline lists
+\newcommand*\sep[0]{\* }
+
+% this lets us use multiple columns
+\usepackage{multicol}
+% this sets how much space between any two columns
+\setlength{\columnsep}{2em}
+
+% this is for tables
+\usepackage{tabularx}
+
+% and here's where we define colors, giving each a name so we can refer to it
+\usepackage{xcolor}
+
+% first basic stuff 
+\definecolor{offwhite}{HTML}{ffffff}
+
+% now single use case items like 'text I put in the margins'
+\definecolor{margintext}{HTML}{363b4d}
+
+% ... and box corners/backgrounds
+\definecolor{plainboxbg}{HTML}{F3F3F3}
+\definecolor{plainboxtxt}{HTML}{000000}
+\definecolor{plainboxtabs}{HTML}{363b4d}
+
+% ... and the title color
+\definecolor{titlecolor}{HTML}{363b4d}
+\definecolor{taglinecolor}{HTML}{363b4d}
+
+% ... and section header color
+\definecolor{shadecolor}{HTML}{909090}
+
+% this is just a convenience function to put a box around text
+\newcommand{\shadebox}[1]{\par\noindent\colorbox{shadecolor}
+{\parbox{\dimexpr\textwidth-2\fboxsep\relax}{#1}}\smallskip}
+
+% this puts a repeating symbol over and over to the left of the text; an alternate header
+\newcommand\rep{\leavevmode\xleaders\hbox{/ }\hfill\kern0pt}
+
+% this creates fancier boxes
+\usepackage[raster, skins, hooks, many]{tcolorbox}
+
+% ... but we're just creating a simple one to start
+\newtcolorbox{plainbox}[1][]{fonttitle=\color{white}\headfont, colframe=shadecolor, colback=white, after skip=2mm, #1}
+
+% drop caps, very useful for mechanic results
+\usepackage{lettrine}
+\renewcommand{\LettrineFontHook}{\numeralfont}
+\setlength{\DefaultNindent}{2pt}
+\setlength{\DefaultFindent}{2pt}
+
+% uncomment this to change the entire page's background
+%\pagecolor{\color{50!red}}
+
+% hide links so they're not marked out
+\usepackage[hidelinks]{hyperref}
+
+% and now some general formatting; you can adjust other parts by changing 'sec' to 'subsec' or 'subsubsec'
+
+% remove numbering from section titles, as we'll use our sections as dividers between rules chunks
+\setsecnumformat{}
+
+% now reduce spacing around section tags
+\setaftersecskip{1mm}
+\setbeforesecskip{3mm}
+
+% and redefine what font we use for section heads
+\setsecheadstyle{\sectionfont\color{blue}}% Set \section style
+
+% save the current indent so you can use \indent when you want to indent
+\newlength\tindent
+\setlength{\tindent}{\parindent}
+\renewcommand{\indent}{\hspace*{\tindent}}
+
+% and here we set the default indent to nothing and a line between paragraphs instead
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{.5\baselineskip}
+
+% make it so text doesn't squash down to the bottom
+\raggedbottom
+
+% now remove page numbering since this is just one sheet
+\pagestyle{empty}
+
+% this redefines minipage (basically an invisible box) to use all the same settings as above
+\newlength{\currentparskip}
+    \newenvironment{mpage}[1]{%
+        \setlength{\currentparskip}{\parskip}% save the value
+             \begin{minipage}{#1}% open the minipage
+         \setlength{\parskip}{\currentparskip}% restore the value
+    }
+{\end{minipage}}
+
+% and this sets up a double rule you can use as a divider
+\newcommand{\doublerule}[1][.4pt]{%
+  \noindent\color{black!75}
+  \makebox[0pt][l]{\rule[.7ex]{\linewidth}{#1}}%
+  \rule[.3ex]{\linewidth}{#1}\color{black}\vspace{-1mm}}
+
+%%% BEGIN DOCUMENT; this is required
+\begin{document}
+
+% set up 3 columns; this will be matched at the very end with \end{multicols}
+\begin{multicols}{3}
+
+%  I like to set up any textblocks (from textpos package) up front. The 13 is how wide the textblock is, and the 13.5 and 21 tell you how high on the page and how far over it is. Try setting it to 0,0 to see the difference.
+  \begin{textblock}{15}(13.5,21)
+      \footnotesize
+        \textit{\href{https://github.com/Astral-Frontier-Games/faces}{Faces} is licensed under a \href{https://creativecommons.org/licenses/by/4.0/}{Creative Commons Attribution 4.0 International License}.}
+  \end{textblock}
+
+% this is how you add another textblock, and how you include a graphic
+\begin{textblock}{18}(15.25,0.5)
+  \includegraphics[width=.15\textwidth]{images/theater-icon-29507.png}
+\end{textblock}
+
+% now we start laying it out
+
+%vspace and hspace adjust the vertical space above their line and the horizontal space before it, respectively
+% the asterisk says 'no really, do this' if latex for some reason won't
+
+% first, open a mpage, our custom minipage
+
+% columnwidth is the width of one column, in this case, a third of the page. By putting a number in front of it, you can multiply it by that number 
+% two columns is roughly 2.13. This stretches the invisible block across two columns.
+\begin{mpage}{2.13\columnwidth}
+
+ \hspace*{0mm}{\toptitle{Faces}}
+
+% a little extra space over what'd normally be provided
+\vspace{3mm}
+
+\textit{A system-agnostic supplement for creating NPCs that represent something larger.}
+
+\doublerule
+
+\end{mpage}
+
+% a little extra space over what'd normally be provided
+\vspace{2mm}
+
+\section{What is a Face?}
+
+A \textit{Face} is a specific type of Non-Protagonist Character (or "Non-Player Character" or "NPC", run by a game's facilitator). A Face is a person in the story who serves as a narrative proxy for something intangible or impersonal, like a religion, a social movement, or a government. Through interacting with the Face, we learn about what they represent, called the \textit{Locus}. At the same time, a Face is still an individual, and has their own hopes, dreams, and motivations. For example, in "Star Wars", Darth Vader can be seen as one Face of the Empire. Vader is powerful and does bad things, and so does the Empire. But the Empire doesn't have a son, while Vader does, and that fact changes the Empire through Vader killing the Emperor.
+
+\section{Using Faces}
+
+When you want the players to interact with a Locus, like a kingdom, a conspiracy, or an enemy army, they should do so through a Face character. The Face's actions should reflect their personality and motives, as well as the Locus and its interests. If the Locus's situation is complicated, the players might encounter multiple Faces. Faces serving the same Locus can be in conflict with each other, or cooperate but have their own takes on a situation.
+
+Faces are strongest when multiple Faces and multiple Loci are in play. For example, the PCs can interact with both a heroic Rebel leader and a stuffy Imperial commander, but those two Faces will have a relationship and history as well.
+
+Here are some principles for portraying a Face:
+
+\textbf{Put a human face on the Locus}
+
+\textbf{Enact the Locus's agenda, but in your own way}
+
+\textbf{Push situations forward by revealing your conflicts}
+
+\textbf{Ignore the Locus' interests in favor of a personal conflict}
+
+\textbf{Offer a means for players to change the Locus' agenda or nature}
+
+\vfill\null % if the text isn't compressed enough, use this to "fill" the rest of the column
+
+\columnbreak
+
+% now we put in some vertical space, which depends on your font and title, to account for the overlapping minipage. Note the dot.
+{\color{white}.}
+\vspace{19mm}
+
+\section{Creating Faces}
+
+To quickly create a Face, follow these steps:
+
+\begin{enumerate}
+\item Pick an emotion from the Emotion Table
+\item Name the source or object of this emotion in the Face's life, e.g. "they feel Grief at the loss of lives under their command" or "they feel Loathing toward the Rebel scum"
+\item Start with at least one \textit{conflict}, either internal or external (see below)
+\item If desired, add more conflicts
+\end{enumerate}
+
+Our interest in the Face as players is how we interact with the Face and their conflicts. Ideally, the Face’s conflicts will also tie back to the player characters' own goals and histories. There is no "right" number of conflicts, but 1 is good for a low-ranking individual, and 2-3 indicates someone with more story importance.
+
+\subsection{Creating Internal Conflicts}
+
+\begin{enumerate}
+\item Pick a new emotion from the Emotion Table
+\item Name the source or object of this emotion, just as before, e.g. "they feel Admiration toward an Imperial officer"
+\item Relate this new emotion back to their primary emotion, e.g. "the Imperial officer was responsible for harming many Rebels"
+\end{enumerate}
+
+\subsection{Creating External Conflicts}
+
+\begin{enumerate}
+\item Name another character (a Face, PC, or other character) or another Locus
+\item Name a shared sphere of influence or interest, e.g. "the military occupation of our lands"
+\item Name a point of contention between the Face and that other party within that sphere, e.g. "the other Rebel commander is much more aggressive than I prefer"
+\end{enumerate}
+
+\vfill\null % if the text isn't compressed enough, use this to "fill" the rest of the column
+
+\columnbreak
+
+\section{Emotion Table}
+
+Roll a d8 for emotion. Reroll if you get a result you've already gotten. Then either pick or roll a d6 for intensity. If you use everything, start reusing stuff.
+
+Emotions can shade into each other. Look at the optional interpretations and pick one if it makes sense.
+
+\begin{enumerate}
+\item [1:] Ecstacy (1-2), Joy (3-4), Serenity (5-6). Optional: Optimism, Love
+\item [2:] Admiration (1-2), Trust (3-4), or Acceptance (5-6). Optional: Love, Submission
+\item [3:] Terror (1-2), Fear (3-4), or Apprehension (5-6). Optional: Submission, Awe
+\item [4:] Amazement (1-2), Surprise (3-4), or Distraction (5-6). Optional: Awe, Disapproval
+\item [5:] Grief (1-2), Sadness (3-4), or Pensiveness (5-6). Optional: Disapproval, Remorse
+\item [6:] Loathing (1-2), Disgust (3-4), or Boredom (5-6). Optional: Remorse, Contempt
+\item [7:] Rage (1-2), Anger (3-4), or Annoyance (5-6). Optional: Contempt, Aggressiveness
+\item [8:] Vigilance (1-2), Anticipation (3-4), or Interest (5-6). Optional: Aggressiveness, Optimism
+\end{enumerate}
+
+\section{Example Faces}
+
+The \textbf{Noble} is a representative of social power in their city. They feel Serenity toward the system of nobility and their own position - they are blithely self-satisfied. They have an external conflict with the lower class, centered on wealth disparity, and they believe wealth is an earned privilege.
+
+The \textbf{Schemer} is someone who actively works to maintain the aristocratic system by any means. They feel Rage toward threats to that system. They have an internal conflict rooted in Grief, because they secretly emerged from the poverty of the slums and fought their way into their current position.
+
+The \textbf{Demagogue} represents the underclass. They feel Loathing toward the aristocrats' opulent and wasteful lifestyles.
+They have two conflicts: an internal Vigilance against not letting their dislike become a personal hatred of people,
+and an external conflict with their ex-spouse the Schemer, over the place of the poor in the city.
+
+\section{Credits}
+
+Image from  \href{https://www.freeiconspng.com/img/29507}{freeiconspng.com}
+
+% this ends our multicols
+\end{multicols}
+
+% this ends our document
+\end{document}
